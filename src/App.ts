@@ -129,7 +129,7 @@ try {
             } else if (line.startsWith("}")) {
                 if (mname != "") {
                     tjs += "\tconstructor(buf) { if (buf) this.Decode(buf) }\n"
-                    tjs += "\tEncode = function () { return encode" + mname + "(this) }\n"
+                    tjs += "\tEncode = function () { return Buffer.from(encode" + mname + "(this)) }\n"
                     tjs += "\tDecode = function (buf) {\n"
                     tjs += "\t\tif (typeof (buf) == \"string\") buf = Buffer.from(buf)\n"
                     tjs += "\t\tlet obj = decode" + mname + "(buf)\n"
