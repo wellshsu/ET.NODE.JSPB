@@ -131,6 +131,7 @@ try {
                     tjs += "\tconstructor(buf) { if (buf) this.Decode(buf) }\n"
                     tjs += "\tEncode = function () { return encode" + mname + "(this) }\n"
                     tjs += "\tDecode = function (buf) {\n"
+                    tjs += "\t\tif (typeof (buf) == \"string\") buf = Buffer.from(buf)\n"
                     tjs += "\t\tlet obj = decode" + mname + "(buf)\n"
                     tjs += "\t\tfor (let k in obj) { this[k] = obj[k] }\n"
                     tjs += "\t}\n"
