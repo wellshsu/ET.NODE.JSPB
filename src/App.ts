@@ -129,10 +129,24 @@ try {
             } else if (line.startsWith("}")) {
                 if (mname != "") {
                     tjs += "\tconstructor(buf) { if (buf) this.Decode(buf) }\n"
-                    tjs += "\tEncode = function () { return Buffer.from(encode" + mname + "(this)) }\n"
+                    tjs += "\tEncode = function () {\n"
+                    tjs += "\t\tif (window.USE_PB) {\n"
+                    tjs += "\t\t\treturn Buffer.from(encode" + mname + "(this))\n"
+                    tjs += "\t\t} else {\n"
+                    tjs += "\t\t\treturn JSON.stringify(this)\n"
+                    tjs += "\t\t}\n"
+                    tjs += "\t}\n"
+
                     tjs += "\tDecode = function (buf) {\n"
-                    tjs += "\t\tif (typeof (buf) == \"string\") buf = Buffer.from(buf)\n"
-                    tjs += "\t\tlet obj = decode" + mname + "(buf)\n"
+                    tjs += "\t\tlet obj = null\n"
+                    tjs += "\t\tif (window.USE_PB) {\n"
+                    tjs += "\t\t\tif (buf instanceof ArrayBuffer) buf = Buffer.from(buf)\n"
+                    tjs += "\t\t\tobj = decode" + mname + "(buf)\n"
+                    tjs += "\t\t} else {\n"
+                    tjs += "\t\t\tif (buf instanceof ArrayBuffer) buf = String.fromCharCode.apply(null, Buffer.from(buf))\n"
+                    tjs += "\t\t\telse if (buf instanceof Buffer) buf = String.fromCharCode.apply(null, buf)\n"
+                    tjs += "\t\t\tobj = JSON.parse(buf)\n"
+                    tjs += "\t\t}\n"
                     tjs += "\t\tfor (let k in obj) { this[k] = obj[k] }\n"
                     tjs += "\t}\n"
                 }
